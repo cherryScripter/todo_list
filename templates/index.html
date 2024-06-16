@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+{% from 'bootstrap4/form.html' import render_form %}
+
+  <div class="my-3 p-3 bg-white rounded shadow-sm">
+    <h3>Create your to-do list below:</h3><br>
+  </div>
+
+<div class="container marketing">
+    <!-- START THE FEATURETTES -->
+
+    <div class="row featurette">
+      <div class="col-md-7 order-md-2">
+          <h2 class="featurette-heading fw-normal lh-1">My todo list:</h2>
+                 {% for task in tasks %}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="radio" aria-label="Radio button for following text input">
+                    </div>
+                </div>
+                <label class="form-control">
+                    {{ task }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+
+      <div class="col-md-5 order-md-1">
+        <div class="input-group ml-3">
+                {{ render_form(form) }}
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
