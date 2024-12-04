@@ -1,34 +1,30 @@
-from sqlalchemy import Integer, String, Boolean
-from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from datetime import timedelta
+from typing import Union
+from sqlalchemy.orm import DeclarativeBase
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response, session
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, validators
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-from flask_bootstrap import Bootstrap5  # pip install bootstrap-flask
+from flask_bootstrap import Bootstrap5
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "gatdmxmvLvo81653j!ksd"
+app.secret_key = os.getenv("SECRET_KEY")
 bootstrap = Bootstrap5(app)
+
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(days=1)
+
 
 # CREATE DATABASE
 class Base(DeclarativeBase):
     pass
-
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
-db = SQLAlchemy(model_class=Base)
-db.init_app(app)
-
-
-class TaskList(db.Model):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    task_text: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    checked: Mapped[bool] = mapped_column(Boolean, default=False)  # Add checked column
-
-
-with app.app_context():
-    db.create_all()
 
 
 class TaskForm(FlaskForm):
@@ -36,49 +32,37 @@ class TaskForm(FlaskForm):
     submit = SubmitField('ADD')
 
 
-tasks = []
-
-
 @app.route("/", methods=['GET', 'POST'])
-def home():
+def home() -> Union[str, Response]:
     form = TaskForm(request.form)
+    if 'tasks' not in session:
+        session['tasks'] = []
     if form.validate_on_submit():
-        task = form.task_text.data
-        tasks.append(task)
-        new_task = TaskList(
-            task_text=form.task_text.data)
-        db.session.add(new_task)
-        db.session.commit()
+        task = {
+            'text': form.task_text.data,
+            'checked': False
+        }
+        session['tasks'].append(task)
         return redirect(url_for('home'))
-    all_tasks = db.session.execute(db.select(TaskList).order_by(TaskList.id)).scalars().all()
-    return render_template('index.html', form=form, all_tasks=all_tasks)
+    return render_template('index.html', form=form, all_tasks=session['tasks'])
 
 
 @app.route('/update-task/<int:task_id>', methods=['POST'])
 def update_task(task_id):
-    task = db.get_or_404(TaskList, task_id)
-    task.checked = not task.checked
-    db.session.commit()
+    if session['tasks'][task_id]['checked']:
+        session['tasks'][task_id]['checked'] = False
+    else:
+        session['tasks'][task_id]['checked'] = True
+    session.modified = True
     return jsonify({'success': True})
 
 
-# @app.route("/new_list")
-# def new_list():
-#     global tasks
-#     tasks = []
-#     return redirect(url_for('home'))
-#
-
 @app.route('/delete-task')
 def delete():
-    task_id = request.args.get("task_id")
-    print(task_id)
-    task_to_delete = db.get_or_404(TaskList, task_id)
-    print(task_to_delete)
-    db.session.delete(task_to_delete)
-    db.session.commit()
+    task_id = int(request.args.get("task_id"))
+    session['tasks'].pop(task_id)
+    session.modified = True
     return redirect(url_for('home'))
-
 
 
 if __name__ == '__main__':

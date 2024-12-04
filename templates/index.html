@@ -10,22 +10,27 @@
     <!-- START THE FEATURETTES -->
     <div class="row featurette">
       <div class="col-md-7 order-md-2">
-          <h2 class="featurette-heading fw-normal lh-1">My todo list:</h2>
+          <h2 class="featurette-heading fw-normal lh-1 mb-3">My todo list:</h2>
                  {% for task in all_tasks %}
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <div class="input-group-text">
 
+                        {% if task['checked'] %}
                         <input type="checkbox" aria-label="Checkbox for following text input"
-                               onclick="toggleCheck({{ task.id }})"
-                               {% if task.checked %} checked {% endif %}>
+                               onclick="toggleCheck({{ loop.index0 }})"
+                                checked>
+                        {% else %}
+                        <input type="checkbox" aria-label="Checkbox for following text input"
+                               onclick="toggleCheck({{ loop.index0 }})">
+                        {% endif %}
                     </div>
                 </div>
-                <label class="form-control" id="task-{{ task.id }}"
+                <label class="form-control" id="task-{{ loop.index0 }}"
                        style="text-decoration: {% if task.checked %} line-through {% endif %};">
-                    {{ task.task_text }}
+                    {{ task['text'] }}
                 </label>
-                            <a href="{{ url_for('delete', task_id=task.id) }}" style="margin-left: 10px;" title="delete"> ✖ </a>
+                            <a href="{{ url_for('delete', task_id=loop.index0) }}" style="margin-left: 10px;" title="delete"> ✖ </a>
                         <p class="post-meta">
             </div>
             {% endfor %}
@@ -33,6 +38,7 @@
       <div class="col-md-5 order-md-1">
         <div class="input-group ml-3">
                 {{ render_form(form) }}
+                {{ form.hidden_tag() }}
         </div>
       </div>
     </div>
@@ -50,7 +56,9 @@
             });
     }
 </script>
-
-
-
+<br>
+{% include "footer.html" %}
 {% endblock %}
+
+
+<a href="https://linkedin.com/in/jakub-gniewek-375a021a0" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="jakub-gniewek-375a021a0" height="30" width="40" /></a>
