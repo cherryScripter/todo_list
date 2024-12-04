@@ -6,9 +6,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, validators
 from wtforms.validators import DataRequired
 from flask_bootstrap import Bootstrap5  # pip install bootstrap-flask
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
-app.secret_key = "gatdmxmvLvo81653j!ksd"
+app.secret_key = os.getenv("SECRET_KEY")
 bootstrap = Bootstrap5(app)
 
 # CREATE DATABASE
