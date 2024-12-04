@@ -5,12 +5,19 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, R
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+<<<<<<< HEAD
 from flask_bootstrap import Bootstrap5
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+=======
+from flask_bootstrap import Bootstrap5  # pip install bootstrap-flask
+import os
+from dotenv import load_dotenv
+>>>>>>> 6faa13a11caaafe566a079b0c42e522e8aa10c94
 
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 bootstrap = Bootstrap5(app)
