@@ -6,3 +6,7 @@
 - Mark Tasks as Complete: Tasks can be checked or unchecked to indicate completion.
 - Delete Tasks: Users can remove tasks from the list.
 - Session Management: Tasks are stored in the session, with a session duration of one day.
+
+### Screenshots
+![home_page](static/images/todolist2.png)
+![home_page](static/images/todolist1.png)
