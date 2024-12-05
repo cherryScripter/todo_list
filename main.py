@@ -1,6 +1,5 @@
 from datetime import timedelta
 from typing import Union
-from sqlalchemy.orm import DeclarativeBase
 from flask import Flask, render_template, request, redirect, url_for, jsonify, Response, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -34,7 +33,7 @@ def handle_csrf_error(e):
 
 
 @app.before_request
-def make_session_permanent():
+def make_session_permanent() -> None:
     """
     Ensures the user session remains active and sets a custom session lifetime.
     This functions runs every request.
@@ -77,7 +76,7 @@ def home() -> Union[str, Response]:
 
 
 @app.route('/update-task/<int:task_id>', methods=['POST'])
-def update_task(task_id):
+def update_task(task_id: int) -> Response:
     """
     Toggles the 'checked' status of a task in the session-based task list.
 
@@ -96,7 +95,7 @@ def update_task(task_id):
 
 
 @app.route('/delete-task')
-def delete():
+def delete() -> Response:
     """
     Deletes a task from the session-based task list.
 
